@@ -29,6 +29,17 @@ void Main()
 	// because it has a defined (strong) type.
 	strongResults.Select(x => x.SongTitle).FirstOrDefault().Dump("First Song");
 	
+	//Genre, the AlbumName, the TrackName, & the ArtistName for display in a Grid on the GUI
+	var trackInfo = GetAllTracksInformation();
+	trackInfo.Dump("Track Information");
+	
+	foreach(var track in trackInfo)
+	{
+		// Since this is strong typed (has a data definition) we can access the individual Properties
+		if(track.Artist == "AC/DC")
+			track.Dump();
+	}
+	
 }
 
 #region Methods
@@ -60,6 +71,18 @@ public IEnumerable<SongView> GetStrongSongsByPartialName(string partialName)
 			});
 }
 
+public IEnumerable<TrackInfoView> GetAllTracksInformation() 
+{
+	return Tracks
+			.Select(x => new TrackInfoView
+			{
+				Genre = x.Genre.Name,
+				Album = x.Album.Title,
+				Track = x.Name,
+				Artist = x.Album.Artist.Name
+			});
+}
+
 #endregion
 
 #region ViewModels
@@ -69,6 +92,14 @@ public class SongView
 	// We can do read-only, calculated, fully implemented if needed.
 	public string AlbumTitle { get; set; }
 	public string SongTitle { get; set; }
+	public string Artist { get; set; }
+}
+//Genre, the AlbumName, the TrackName, & the ArtistName for display in a Grid on the GUI
+public class TrackInfoView 
+{
+	public string Genre { get; set; }
+	public string Album { get; set; }
+	public string Track { get; set; }
 	public string Artist { get; set; }
 }
 #endregion

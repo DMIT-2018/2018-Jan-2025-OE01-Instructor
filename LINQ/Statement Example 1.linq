@@ -184,5 +184,15 @@ Albums
 		
 		//else
 			//return "Modern"
+			
+// Where Example with Date Search
+// Find all employees born after in or after 1970
+Employees
+	.Where(x => x.BirthDate >= new DateTime(1970, 1, 1)).Dump();
+
+//Using parse without a format dd/mm/yyyy
+Employees
+	.Where(x => x.BirthDate >= DateTime.Parse("01/01/1970")).Dump();
+
 
 
