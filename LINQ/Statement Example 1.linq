@@ -193,6 +193,8 @@ Employees
 //Using parse without a format dd/mm/yyyy
 Employees
 	.Where(x => x.BirthDate >= DateTime.Parse("01/01/1970")).Dump();
+	
+
 
 
 
