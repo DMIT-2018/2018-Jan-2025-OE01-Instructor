@@ -19,5 +19,27 @@ OrderDetails
 	.Select(x => new
 	{
 		Year = x.Key,
-		Revenue = $"{x.Sum(x => x.Quantity * x.UnitPrice):C2}"
+		Revenue = x.Sum(x => x.Quantity * x.UnitPrice)
 	}).Dump();
+	
+// Group Order Details by, Customer City and Product Category
+// Show city, Category, and Count
+OrderDetails
+	.GroupBy( x => new {
+						//Yes, you can name your keys, you don't need to typically
+						//Linq automatically names the 'fields' by the field name in anon types.
+						//Example City and CategoryName as they are the actual field names from the entities.
+						//However, you may need to name them if you are grouping by fields that have the same
+						//name (this is rare, don't expect to need this)
+						Bob = x.Order.Customer.City,
+						x.Product.Category.CategoryName
+					})
+	.Select(x => new {
+		City = x.Key.Bob,
+		Category = x.Key.CategoryName,
+		Count = x.Count()
+	})
+	.OrderBy(x => x.City)
+	.ThenBy(x => x.Category)
+	.Dump();
+	
