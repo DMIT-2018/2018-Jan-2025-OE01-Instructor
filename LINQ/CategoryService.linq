@@ -103,6 +103,132 @@ public CategoryView GetCategory(string categoryName)
 				RemoveFromViewFlag = x.RemoveFromViewFlag
 			}).FirstOrDefault();
 }
+
+//For a Add/Insert we are returning the PK of the main new record.
+public int AddCategory(CategoryView categoryView)
+{
+	List<Exception> errorList = [];
+	#region Business Rules
+	//rule: Category View cannot be null
+	if (categoryView == null)
+		throw new ArgumentNullException("No category was supplied");
+	//Call the Validation Method to return the list of errors
+	//May return an empty list if there are no errors. (this is good)
+	errorList = ValidateCategory(categoryView);
+	#endregion
+
+	//create a new category to transfer the information from our view to the category record.
+	Category category = new();
+	//Transfer the information from the View Model to the new record
+	//We never update or add the Primary Key
+	//Most of the time the database will automatically create the PK
+	//Examples: Integer incrementing, new GUID
+	//When updating, you can't and should never update the PK of a record.
+	category.CategoryName = categoryView.CategoryName;
+	//We can update/add the logical delete flag in case this record needs to be deleted.
+	category.RemoveFromViewFlag = categoryView.RemoveFromViewFlag;
+
+	//Check for errors, are there any errors in the list:
+	//NOTE: YOU SHOULD ONLY HAVE ONE CHECK FOR ERRORS IN ORDER TO ROLL BACK IN A METHOD
+	if (errorList.Count > 0)
+	{
+		//RollBack
+		ChangeTracker.Clear();
+		throw new AggregateException("Unable to add the category, please check error message(s)", errorList);
+	}
+	else
+	{
+		//Save the changes locally
+		Categories.Add(category);
+		//Remember to use a try/catch around the SaveChanges to throw a nice exception
+		try
+		{
+			SaveChanges();
+			//For an insert/add always return the new PK for the record.
+			return category.CategoryID;
+		}
+		catch (Exception ex)
+		{
+			throw new Exception($"An error occured while saving: {ex.Message}", ex);
+		}
+	}
+}
+
+//For an edit we are returning the number of records that were changed
+public int EditCategory(CategoryView categoryView)
+{
+	List<Exception> errorList = [];
+	//Insert Business Logic
+	//rule: Category View cannot be null
+	if (categoryView == null)
+		throw new ArgumentNullException("No category was supplied");
+	ValidateCategoryWithOut(categoryView, out errorList);
+	//Find the existing category
+	//We will have the PK in order to search
+	Category category = Categories
+									.Where(x => x.CategoryID == categoryView.CategoryID
+											&& !x.RemoveFromViewFlag)
+									.FirstOrDefault();
+	if (category == null)
+	{
+		errorList.Add(new InvalidOperationException($"A Category with the Category ID: {categoryView.CategoryID} and Category Name: {categoryView.CategoryName} cannot be found or has been deleted. Cannot update the record."));
+	}
+	else
+	{
+		category.CategoryName = categoryView.CategoryName;
+		category.RemoveFromViewFlag = categoryView.RemoveFromViewFlag;
+	}
+	if(errorList.Count > 0)
+	{
+		//RollBack
+		ChangeTracker.Clear();
+		throw new AggregateException("Unable to add the category, please check error message(s)", errorList);
+	}
+	else
+	{
+		Categories.Update(category);
+		try
+		{
+			//For an update we return SaveChanges as this returns the number of records that were changes.
+			//So we can ensure that at least one record was updated.
+			return SaveChanges();
+		}
+		catch (Exception ex)
+		{
+			throw new Exception($"An error occured while saving: {ex.Message}", ex);
+		}
+	}
+}
+
+//Validation is the same for Add or Update, so we consulidated it to one Method.
+public List<Exception> ValidateCategory(CategoryView categoryView)
+{
+	List<Exception> errorList = [];
+	//rule: Category name cannot be empty or whitespace
+	if (string.IsNullOrWhiteSpace(categoryView.CategoryName))
+		errorList.Add(new ArgumentException("Category name cannot be empty of white space."));
+	//rule: Category cannot have the same name as another category
+	bool exists = Categories
+					.Where(x => x.CategoryName == categoryView.CategoryName)
+					.Any();
+	if (exists)
+		errorList.Add(new ArgumentException($"A category with the name {categoryView.CategoryName} already exists."));
+	return errorList;
+}
+//Example with Out - You do not need to know this at all
+public void ValidateCategoryWithOut(CategoryView categoryView, out List<Exception> errorList) 
+{
+	errorList = [];
+	//rule: Category name cannot be empty or whitespace
+	if (string.IsNullOrWhiteSpace(categoryView.CategoryName))
+		errorList.Add(new ArgumentException("Category name cannot be empty of white space."));
+	//rule: Category cannot have the same name as another category
+	bool exists = Categories
+					.Where(x => x.CategoryName == categoryView.CategoryName)
+					.Any();
+	if (exists)
+		errorList.Add(new ArgumentException($"A category with the name {categoryView.CategoryName} already exists."));
+}
 #endregion
 
 //	This region includes the view models used to 
