@@ -104,6 +104,69 @@ public CategoryView GetCategory(string categoryName)
 			}).FirstOrDefault();
 }
 
+//Combined AddEdit
+public int AddEditCategory(CategoryView categoryView)
+{
+	List<Exception> errorList = [];
+	#region Business Rules
+	//rule: Category View cannot be null
+	if (categoryView == null)
+		throw new ArgumentNullException("No category was supplied");
+	//Call the Validation Method to return the list of errors
+	//May return an empty list if there are no errors. (this is good)
+	errorList = ValidateCategory(categoryView);
+	#endregion
+	
+	//check if the category exists
+	Category category = Categories
+						.Where(x => x.CategoryID == categoryView.CategoryID
+								&& !x.RemoveFromViewFlag)
+						.FirstOrDefault();
+						
+	//if the category was not found then it is considered new
+	if(category == null)
+	{
+		category = new();
+	}
+
+	//Transfer the information from the View Model to the new record
+	//We never update or add the Primary Key
+	//Most of the time the database will automatically create the PK
+	//Examples: Integer incrementing, new GUID
+	//When updating, you can't and should never update the PK of a record.
+	category.CategoryName = categoryView.CategoryName;
+	//We can update/add the logical delete flag in case this record needs to be deleted.
+	category.RemoveFromViewFlag = categoryView.RemoveFromViewFlag;
+
+	//Check for errors, are there any errors in the list:
+	//NOTE: YOU SHOULD ONLY HAVE ONE CHECK FOR ERRORS IN ORDER TO ROLL BACK IN A METHOD
+	if (errorList.Count > 0)
+	{
+		//RollBack
+		ChangeTracker.Clear();
+		throw new AggregateException("Unable to add the category, please check error message(s)", errorList);
+	}
+	else
+	{
+		//Save the changes locally
+		if(categoryView.CategoryID != 0)
+			Categories.Update(category);
+		else
+			Categories.Add(category);
+		//Remember to use a try/catch around the SaveChanges to throw a nice exception
+		try
+		{
+			SaveChanges();
+			//For an insert/add always return the new PK for the record.
+			return category.CategoryID;
+		}
+		catch (Exception ex)
+		{
+			throw new Exception($"An error occured while saving: {ex.Message}", ex);
+		}
+	}
+}
+
 //For a Add/Insert we are returning the PK of the main new record.
 public int AddCategory(CategoryView categoryView)
 {
@@ -153,7 +216,7 @@ public int AddCategory(CategoryView categoryView)
 		}
 	}
 }
-
+ 
 //For an edit we are returning the number of records that were changed
 public int EditCategory(CategoryView categoryView)
 {
@@ -166,9 +229,9 @@ public int EditCategory(CategoryView categoryView)
 	//Find the existing category
 	//We will have the PK in order to search
 	Category category = Categories
-									.Where(x => x.CategoryID == categoryView.CategoryID
-											&& !x.RemoveFromViewFlag)
-									.FirstOrDefault();
+							.Where(x => x.CategoryID == categoryView.CategoryID
+									&& !x.RemoveFromViewFlag)
+							.FirstOrDefault();
 	if (category == null)
 	{
 		errorList.Add(new InvalidOperationException($"A Category with the Category ID: {categoryView.CategoryID} and Category Name: {categoryView.CategoryName} cannot be found or has been deleted. Cannot update the record."));
@@ -215,6 +278,7 @@ public List<Exception> ValidateCategory(CategoryView categoryView)
 		errorList.Add(new ArgumentException($"A category with the name {categoryView.CategoryName} already exists."));
 	return errorList;
 }
+
 //Example with Out - You do not need to know this at all
 public void ValidateCategoryWithOut(CategoryView categoryView, out List<Exception> errorList) 
 {
