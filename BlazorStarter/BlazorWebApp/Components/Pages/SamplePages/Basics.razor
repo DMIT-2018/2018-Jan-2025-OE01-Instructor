@@ -9,7 +9,7 @@
 }
 
 <!--
-    Or comments can be like this within these "arrows"
+Or comments can be like this within these "arrows"
 -->
 @{
     // Blazor Components Combine C# and HTML in a single file
@@ -17,7 +17,7 @@
     // When using '@', you are in the C# environment, allowing for C# code execution
     // Without '@' you are in the HTML environment, where you can write standard HTML
 }
-<MudCard Elevation="4" >
+<MudCard Elevation="4">
     <MudCardHeader>
         <MudText Typo="Typo.h5">Demonstration of using Methods</MudText>
     </MudCardHeader>
@@ -26,9 +26,9 @@
         @if (IsEven)
         {
             <!--
-                Display a message if the value is even
-                injects the MY_NAME constant and oddEvenValue field
-                into the HTML using the 'at' symbol
+            Display a message if the value is even
+            injects the MY_NAME constant and oddEvenValue field
+            into the HTML using the 'at' symbol
             -->
             <MudText>@MY_NAME is even (value: @oddEvenValue)</MudText>
         }
@@ -41,14 +41,15 @@
     <MudCardActions>
         <MudButton OnClick="RandomValue"
                    Variant="Variant.Filled"
-                   Color="Color.Primary" >
+                   Color="Color.Primary">
             Random Number
         </MudButton>
     </MudCardActions>
 </MudCard>
 
-<section class="mt-4 d-flex flex-row justify-content-evenly">
-    <div>
+<MudGrid Spacing="6"
+         Class="mt-4">
+    <MudItem xs="12" sm="6" md="4">
         <MudForm @ref="textForm">
             <!-- Heading for this Section -->
             <MudText Typo="Typo.h5">Text Boxes</MudText>
@@ -75,7 +76,7 @@
             <!-- Buttons to trigger the TextSubmit Method and Form Validation -->
             <MudButton OnClick="TextSubmit"
                        Color="Color.Primary"
-                       Class="mb-2" >
+                       Class="mb-2">
                 Text Submit
             </MudButton>
             <MudButton OnClick="@(()=>textForm.Validate())"
@@ -84,111 +85,94 @@
                 Validate Text
             </MudButton>
         </MudForm>
-    </div>
-    <div>
-        <h3>Radio buttons, Checkbox, Text Area</h3>
-        <div class="mb-3">
-            <!-- Example using a Microsoft Component -->
-            <label class="form-label">Select your favourite meal (Microsoft): </label><br />
-            <!-- Note: Name in the InputRadioGroup and InputRadio items must match -->
-            <InputRadioGroup Name="mealRadio" @bind-Value="mealMicrosoft">
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudForm @ref="radioCheckForm">
+            <MudText Typo="Typo.h5">Radio buttons, Checkbox, Text Area</MudText>
+            <MudRadioGroup @bind-Value="mealMud">
+                <MudText Typo="Typo.h6">Select your favourite meal (MudBlazor):</MudText>
                 @foreach (var meal in meals)
                 {
-                    <InputRadio Name="mealRadio" Value="@meal" class="form-check-input" />
-
-                    <span class="form-check-label">@($"   {meal}")</span>
                     <br />
+                    <MudRadio Value="@meal">@meal</MudRadio>
                 }
-            </InputRadioGroup>
-        </div>
-        <div class="mb-3">
-            <!-- Example using input -->
-            <label class="form-label">Select your favourite meal (Bootstrap): </label>
-            @foreach (var item in meals)
-            {
-                <div class="form-check">
-                    <input class="form-check-input"
-                           type="radio"
-                           name="meal"
-                           id="meal-@item"
-                           @onchange="HandleMealSelection"
-                           checked="@(item == mealBootstrap)"
-                           value="@item">
-                    <label class="form-check-label" for="meal-@item">
-                        @item
-                    </label>
-                </div>
-            }
-        </div>
-        <div class="mb-3">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="exampleCheckbox" @bind="acceptanceBox" />
-                <label class="form-check-label" for="exampleCheckbox">
-                    I accept the terms of service.
-                </label>
+            </MudRadioGroup>
+            <MudCheckBox @bind-Value=acceptanceBox
+                         Label="I accept the terms of service." />
+            <MudTextField Label="Enter your message"
+                          Variant="Variant.Outlined"
+                          Immediate="true"
+                          @bind-Value="messageBody"
+                          Lines="5" />
+            <div class="d-flex flex-wrap justify-center">
+                <MudButton OnClick="RadioCheckAreaSubmit"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary">
+                    Radio/Check/Area Submit
+                </MudButton>
             </div>
-        </div>
-        <div class="mb-3">
-            <textarea rows="5"
-                      cols="50"
-                      class="form-control"
-                      placeholder="enter message..."
-                      @bind="messageBody" />
-        </div>
-        <button class="btn btn-success" @onclick="RadioCheckAreaSubmit">
-            Radio/Check/Area Submit
-        </button>
-    </div>
-    <div>
-        <h3>List and Slider</h3>
-        <!-- Display a label for the dropdown -->
-        <label for="rideSelect" class="form-label">
-            Select your favourite ride
-        </label>
-        <!-- Create a dropdown select element that binds to the 'myRide' field -->
-        <select class="form-select" id="rideSelect" @bind="myRide">
-            <!--
-                Default option, displayed when no option selected
-                Since this is an int, the value must be 0 which is
-                the default int value.
-                For strings value should = "" or not be set
-            -->
-            <option value="0">Select ride...</option>
-            <!-- Loop through all values in the rides collection and create an option for each -->
-            @foreach (var item in rides)
-            {
-                <!--
-                    Use the .Key for the dictionary as the value as it is an int
-                    Use the .Value to display the string value from the dictionary
-                -->
-                <option value="@item.Key">@item.Value</option>
-            }
-        </select>
-        <label class="form-label">
-            Select favourite Vacation Spot
-            <input type="text" @bind="vacationSpot"
-                   list="VacationChoices"
-                   class="form-control" />
-            <datalist id="VacationChoices">
-                <!-- Data lists do not have default values -->
+        </MudForm>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudForm @ref=listSliderForm>
+            <MudText Typo="Typo.h5">List and Slider</MudText>
+            <MudSelect Label="Select a Ride"
+                       @bind-Value="myRide"
+                       Variant="Variant.Outlined"
+                       Placeholder="Select ride..."
+                       Clearable
+                       Required
+                       RequiredError="Ride selection is required.">
+                @foreach (var item in rides)
+                {
+                    //You must add the T="int?" when using a nullable integer for a MudSelect
+                    //If you do not add this, it will break
+                    <MudSelectItem T="int?" Value="@item.Key">@item.Value</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelect Label="Select Vacation Spots"
+                       @bind-SelectedValues="selectedVacationSpots"
+                       @bind-Value="vacationSpot"
+                       Variant="Variant.Outlined"
+                       MultiSelection="true"
+                       Clearable
+                       Required
+                       RequiredError="Vacations spot select is required."
+                       Placeholder="Select vacation spots">
                 @foreach (var item in vacationSpots)
                 {
-                    <option value="@item" />
+                    <MudSelectItem Value="@item">@item</MudSelectItem>
                 }
-            </datalist>
-        </label>
-        <br />
-        <!-- Label for the slider -->
-        <label for="reviewRange" class="form-label">Rate the form control review (0 = bad, 10 = good)</label>
-        <!-- Input element of type="range", bind to the reviewRating field -->
-        <input type="range" class="form-range" id="reviewRange" @bind="reviewRating" min="0" max="10" steps="1" />
-        <!-- Displays the selected value in the range to the user -->
-        <h6>Rating: @reviewRating</h6>
-        <button class="btn btn-primary" @onclick="ListSliderSubmit">
-            List/Slider Submit
-        </button>
-    </div>
-</section>
+            </MudSelect>
+            <br />
+            <MudSlider @bind-Value=reviewRating
+                       Min="0"
+                       Max="10"
+                       Step="1">
+                Rate the form control review (0 = bad, 10 = good)
+            </MudSlider>
+            <!-- Displays the selected value in the range to the user -->
+            <MudText Typo="Typo.body2"><strong>Rating:</strong> @reviewRating</MudText>
+            <div class="d-flex flex-column">
+                <div class="d-flex flex-wrap justify-center">
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Secondary"
+                               OnClick="@(()=>listSliderForm.Validate())"
+                               Class="my-2">
+                        Validate List/Slider
+                    </MudButton>
+                </div>
+                <div class="d-flex flex-wrap justify-center">
+                    <MudButton Color="Color.Primary"
+                               Variant="Variant.Filled"
+                               OnClick="ListSliderSubmit">
+                        List/Slider Submit
+                    </MudButton>
+                </div>
+            </div>
+        </MudForm>
+    </MudItem>
+</MudGrid>
 <div class="mt-2 mx-auto">
-    <h2>@feedback</h2>
+    <MudText Typo="Typo.h6">@feedback</MudText>
 </div>

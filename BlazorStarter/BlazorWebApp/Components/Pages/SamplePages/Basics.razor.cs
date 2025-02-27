@@ -23,15 +23,14 @@ namespace BlazorWebApp.Components.Pages.SamplePages
         // Holds the array (represented by []) of string values used
         // to represent the various meal choices.
         private string[] meals = ["breakfast", "second breakfast", "lunch", "dinner"];
-        // Used to hold the selected meal value for the Bootstrap based Radio Group
-        private string mealBootstrap = "breakfast";
-        // Used to hold the selected meal value for the Microsoft component based Radio Group
-        private string mealMicrosoft = "breakfast";
+        // Used to hold the selected meal value for the MudBlazor component based Radio Group
+        private string mealMud = "breakfast";
         // Used to hold the value (results) of the checkbox
         // Note: Remember bool always initializes as false
         private bool acceptanceBox;
         // Used to hold the text area value
         private string messageBody = string.Empty;
+        private MudForm radioCheckForm = new();
         #endregion
 
         #region Lists & Sliders
@@ -47,14 +46,16 @@ namespace BlazorWebApp.Components.Pages.SamplePages
         // will be created in a separate method
         private Dictionary<int, string> rides = [];
         // Used to hold the selected value from the rides collection
-        private int myRide;
+        private int? myRide;
         // Used to hold a possible list of string
         // representing various vacation spots
         private List<string> vacationSpots = [];
+        private IEnumerable<string> selectedVacationSpots = [];
         // Used to store the user's selected vacation spot.
         private string vacationSpot = string.Empty;
         // Used to hold the rating Value
         private int reviewRating = 5;
+        private MudForm listSliderForm = new();
         #endregion
 
         // Used for the resulting feedback to the user
@@ -129,19 +130,12 @@ namespace BlazorWebApp.Components.Pages.SamplePages
             feedback = $"Email: {emailText}; Password: {passwordText}; Date: {(dateText.HasValue ? dateText.Value.ToString("d"):"No Date")}";
         }
         /// <summary>
-        /// Handle the selection of the meal from the radio button control
-        /// </summary>
-        private void HandleMealSelection(ChangeEventArgs e)
-        {
-            mealBootstrap = e.Value?.ToString() ?? string.Empty;
-        }
-        /// <summary>
         /// Method is called when the user submits the radio, checkbox,
         /// and text area to update the resulting feedback.
         /// </summary>
         private void RadioCheckAreaSubmit()
         {
-            feedback = $"Bootstrap Meal: {mealBootstrap}; Microsoft Meal: {mealMicrosoft}; Acceptance: {acceptanceBox}; Message: {messageBody}";
+            feedback = $"MudBlazor Meal: {mealMud}; Acceptance: {acceptanceBox}; Message: {messageBody}";
         }
         /// <summary>
         /// Populates the 'rides' and 'vacationSpots' collections with predefined data.
@@ -175,7 +169,7 @@ namespace BlazorWebApp.Components.Pages.SamplePages
         private void ListSliderSubmit()
         {
             //Generate the feedback string incorporating the selected values
-            feedback = $"Ride: {myRide}; Vacation Spot: {vacationSpot}; Review Rating: {reviewRating}";
+            feedback = $"Ride: {(myRide.HasValue ? rides[myRide.Value]:"No ride selected")}; Vacation Spot: {vacationSpot}; Vacation Spots Lists: {string.Join(", ",selectedVacationSpots)};Review Rating: {reviewRating}";
         }
         #endregion
     }
