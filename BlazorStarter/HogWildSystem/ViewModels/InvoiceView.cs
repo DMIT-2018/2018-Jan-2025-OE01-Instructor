@@ -11,7 +11,9 @@ namespace HogWildSystem.ViewModels
         public int InvoiceID { get; set; }
         public DateOnly InvoiceDate { get; set; }
         public int CustomerID { get; set; }
+        public string CustomerName { get; set; } = string.Empty;
         public int EmployeeID { get; set; }
+        public string EmployeeName { get; set; } = string.Empty;
         public decimal SubTotal { get; set; }
         public decimal Tax { get; set; }
         public decimal Total => SubTotal + Tax;
