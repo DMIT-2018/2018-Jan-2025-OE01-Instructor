@@ -31,6 +31,13 @@ namespace HogWildSystem
                 ? throw new InvalidOperationException("HogWildContext is not registered.")
                 : new CustomerService(context);
             });
+            services.AddScoped<InvoiceService>((ServiceProvider) =>
+            {
+                var context = ServiceProvider.GetService<HogWildContext>();
+                return context == null 
+                ? throw new InvalidOperationException("HogWildContext is not registered.")
+                : new InvoiceService(context);
+            });
         }
     }
 }

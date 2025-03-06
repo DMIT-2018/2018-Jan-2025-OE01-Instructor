@@ -10,6 +10,7 @@ namespace BlazorWebApp.Components.Pages.SamplePages
         private string lastName = string.Empty;
         private string phoneNumber = string.Empty;
         private List<CustomerSearchView> customerList = [];
+        private bool noRecords;
 
         //Messages
         private string feedbackMessage = string.Empty;
@@ -30,6 +31,7 @@ namespace BlazorWebApp.Components.Pages.SamplePages
 
             // clear any previous search results
             customerList.Clear();
+            noRecords = false;
 
             try
             {
@@ -40,9 +42,14 @@ namespace BlazorWebApp.Components.Pages.SamplePages
                 //search for customers 
                 customerList = CustomerService.GetCustomers(lastName, phoneNumber);
                 if (customerList.Count > 0)
+                {
                     feedbackMessage = "Search for customer(s) was successful.";
+                } 
                 else
+                {
                     feedbackMessage = "No customers were found for your provided search criteria.";
+                    noRecords = true;
+                }
             }
             catch(AggregateException ex)
             {
