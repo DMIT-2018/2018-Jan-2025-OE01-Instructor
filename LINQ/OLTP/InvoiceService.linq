@@ -19,6 +19,16 @@
 void Main()
 {
 	var invoice = GetInvoice(29, 8, 7);
+	var newLine = new InvoiceLineView
+	{
+		InvoiceID = 29,
+		PartID = 4,
+		Price = 60.00m,
+		Description = "Rear brakes",
+		Quantity = 2,
+		Taxable = true
+	};
+	invoice.InvoiceLines.Add(newLine);
 	AddOrEditInvoice(invoice);
 }
 
@@ -126,7 +136,7 @@ public InvoiceView AddOrEditInvoice(InvoiceView invoiceView)
 	}
 	// Now we know there are no major exceptions, so we can process the Add or Update.
 	// Create a list InvoiceLines that already exist in the database
-	List<InvoiceLineView> databaseInvoiceLineViews = InvoiceLines
+	List<InvoiceLineView> databaseInvoiceLines = InvoiceLines
 		.Where(x => x.InvoiceID == invoiceView.InvoiceID)
 		.Select(x => new InvoiceLineView
 		{
@@ -135,14 +145,130 @@ public InvoiceView AddOrEditInvoice(InvoiceView invoiceView)
 			PartID = x.PartID,
 			Quantity = x.Quantity,
 			Description = x.Part.Description,
-			Price = x.Price,
+			Price = x.Price, 
 			Taxable = x.Part.Taxable,
 			RemoveFromViewFlag = x.RemoveFromViewFlag
 		}).ToList();
 	
 	//Get a list of Parts from our database - this will be used to update Quantity On Hand and to make sure the Parts given exist.
+	List<Part> databaseParts = Parts.ToList();
 	
-	return null;
+	//Process if it is a new or existing Invoice
+	Invoice invoice = Invoices
+		.Where(x => x.InvoiceID == invoiceView.InvoiceID).FirstOrDefault();
+	//Check if it was found, or if it defaulted to null
+	if(invoice == null)
+	{
+		invoice = new();
+	}
+	//Either way we add the values from the invoiceView to the new or existing invoice
+	invoice.InvoiceDate = invoiceView.InvoiceDate;
+	invoice.CustomerID = invoiceView.CustomerID;
+	invoice.EmployeeID = invoiceView.EmployeeID;
+	
+	//Process each Invoice Line for Potential Changes OR New Lines to be added.
+	foreach(InvoiceLineView line in invoiceView.InvoiceLines)
+	{
+		//Get the single Part that might need to be updated
+		Part part = databaseParts.Where(x => x.PartID == line.PartID).FirstOrDefault();
+		//Get the single invoice Line from the database, if it exists!
+		InvoiceLineView dbInvoiceLine = databaseInvoiceLines.Where(x => x.InvoiceLineID == line.InvoiceLineID).FirstOrDefault();
+		//If it exists, the line from the database will not be null
+		if(dbInvoiceLine != null)
+		{
+			//Check if the Quantity has changed
+			if(line.Quantity != dbInvoiceLine.Quantity)
+			{
+				// If it has changed, we need to update the QOH for the part because it sold or not.
+				// Examples:
+				// Invoice line was previous 3, now is 4, there is 1 less part ON HAND
+				// Part QOH was 10, 10 - (4 - 3) => 10 - 1 = 9
+				// Invoice line was previous 5, now is 2, there are 3 more available to sell (ON HAND)
+				// Part QOH was 10, 10 - (2 - 5) => 10 - (-3) =>  10 + 3 = 13
+				part.QOH = part.QOH - (line.Quantity - dbInvoiceLine.Quantity);
+				Parts.Update(part);
+				
+				//Update the invoice
+				InvoiceLine existingInvoiceLine = InvoiceLines
+					.Where(x => x.InvoiceLineID == line.InvoiceLineID).FirstOrDefault();
+				existingInvoiceLine.Quantity = line.Quantity;
+				InvoiceLines.Update(existingInvoiceLine);
+			}
+		}
+		else
+		{
+			InvoiceLine invoiceLine = new();
+			invoiceLine.PartID = line.PartID;
+			invoiceLine.Quantity = line.Quantity;
+			invoiceLine.Price = line.Price;
+			invoiceLine.RemoveFromViewFlag = line.RemoveFromViewFlag;
+			
+			//Update the part QOH
+			part.QOH = part.QOH - line.Quantity;
+			Parts.Update(part);
+			
+			// What about the second FK - InvoiceID
+			// If the Invoice is new then we don't have an InvoiceID yet
+			// To solve this issue, we use the navigational Properties of Entity Framework
+			// When added via navigational properties, adding to the database, automatically provides the InvoiceID.
+			invoice.InvoiceLines.Add(invoiceLine);
+		}
+	}
+
+	//Process each existing line in the database to logically delete them if they are no longer on the invoice
+	//Loop over the database invoice lines and check if they exist on the given invoice
+	foreach (InvoiceLineView line in databaseInvoiceLines)
+	{
+		if(!invoiceView.InvoiceLines.Any(x => x.InvoiceLineID == line.InvoiceLineID))
+		{
+			Part part = databaseParts.Where(x => x.PartID == line.PartID).FirstOrDefault();
+			//Update the part to add back the previous quantity from the invoice line
+			part.QOH = part.QOH + line.Quantity;
+			Parts.Update(part);
+			//We also have to logically delete the invoice line
+			//Get the actual database record, update the remove from view flag and update the record in the database.
+			InvoiceLine deletedInvoiceLine = InvoiceLines
+				.Where(x => x.InvoiceLineID == line.InvoiceLineID).FirstOrDefault();
+			deletedInvoiceLine.RemoveFromViewFlag = true;
+			InvoiceLines.Update(deletedInvoiceLine);
+		}
+	}
+	
+	//Update the Subtotal for the invoice and Tax
+	//reset
+	invoice.SubTotal = 0;
+	invoice.Tax = 0;
+	foreach(InvoiceLine line in invoice.InvoiceLines)
+	{
+		if(line.RemoveFromViewFlag == false)
+		{
+			invoice.SubTotal = invoice.SubTotal + (line.Quantity * line.Price);
+			//We need to check that the Part is actually taxable
+			bool isTaxable = Parts.Where(x => x.PartID == line.PartID)
+				.Select(x => x.Taxable).FirstOrDefault();
+			invoice.Tax = invoice.Tax + (isTaxable
+											? line.Quantity * line.Price * 0.05m
+											: 0);
+		}
+	}
+	
+	//Check if this is an Add or an Update (one last time)
+	if(invoice.InvoiceID == 0)
+		Invoices.Add(invoice);
+	else
+		Invoices.Update(invoice);
+	
+	//Do a final check for any errors
+	if(errorList.Count > 0)
+	{
+		ChangeTracker.Clear();
+		throw new AggregateException("Unable to add or edit invoice. Please check error message(s)", errorList);
+	}
+	else
+	{
+		SaveChanges();
+	}
+	return GetInvoice(invoice.InvoiceID, invoice.CustomerID, invoice.EmployeeID);
 }
 //Supporting Methods
 public string GetCustomerFullName(int customerID)
