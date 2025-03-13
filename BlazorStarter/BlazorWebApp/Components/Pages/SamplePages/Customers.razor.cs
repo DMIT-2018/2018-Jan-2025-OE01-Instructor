@@ -20,6 +20,8 @@ namespace BlazorWebApp.Components.Pages.SamplePages
         #region Parameters
         [Inject]
         protected CustomerService CustomerService { get; set; } = default!;
+        [Inject]
+        protected NavigationManager NavigationManager { get; set; } = default!;
         #endregion
 
         #region Methods
@@ -68,6 +70,11 @@ namespace BlazorWebApp.Components.Pages.SamplePages
             }
             
                 
+        }
+
+        private void NewInvoice(int customerID)
+        {
+            NavigationManager.NavigateTo($"/SamplePages/InvoiceEdit/0/{customerID}/7");
         }
         #endregion
     }
