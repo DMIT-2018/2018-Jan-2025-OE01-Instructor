@@ -12,6 +12,7 @@ namespace BlazorWebApp.Components.Pages.SamplePages
         //Part Search
         private int? categoryID;
         private List<LookupView> partCategories = [];
+        private string description = string.Empty;
 
         //Errors and Feedback
         private List<string> errorDetails = [];
