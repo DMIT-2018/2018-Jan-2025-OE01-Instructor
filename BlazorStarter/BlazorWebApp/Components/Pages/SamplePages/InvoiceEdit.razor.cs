@@ -9,6 +9,10 @@ namespace BlazorWebApp.Components.Pages.SamplePages
         #region Fields
         private InvoiceView invoice = new();
 
+        //Part Search
+        private int? categoryID;
+        private List<LookupView> partCategories = [];
+
         //Errors and Feedback
         private List<string> errorDetails = [];
         private string errorMessage = string.Empty;

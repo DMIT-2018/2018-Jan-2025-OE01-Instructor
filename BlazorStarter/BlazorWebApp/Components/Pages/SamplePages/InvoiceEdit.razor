@@ -21,7 +21,20 @@
         </MudPaper>
     </MudItem>
 </MudGrid>
+<MudStack Row
+Class="mt-2"
+AlignItems="AlignItems.Center"
+Justify="Justify.FlexStart"
+Spacing="4">
+    <MudSelect @bind-Value="categoryID"
+    Variant="Variant.Outlined">
+        @foreach(var category in partCategories)
+        {
+            <MudSelectItem T="int?" Value="@category.LookupID">@category.Name</MudSelectItem>
+        }
+    </MudSelect>
+</MudStack>
 
-<MudDataGrid>
+@* <MudDataGrid>
 
-</MudDataGrid>
+</MudDataGrid> *@
