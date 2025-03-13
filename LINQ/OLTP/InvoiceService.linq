@@ -18,18 +18,50 @@
 
 void Main()
 {
-	var invoice = GetInvoice(29, 8, 7);
-	var newLine = new InvoiceLineView
-	{
-		InvoiceID = 29,
-		PartID = 4,
-		Price = 60.00m,
-		Description = "Rear brakes",
-		Quantity = 2,
-		Taxable = true
-	};
-	invoice.InvoiceLines.Add(newLine);
-	AddOrEditInvoice(invoice);
+	//GetInvoice(29, 8, 7).Dump();
+	//InvoiceView newInvoice = GetInvoice(0, 8, 7);
+	//newInvoice.Dump();
+	//var newLine = new InvoiceLineView
+	//{
+	//	PartID = 4,
+	//	Price = 60.00m,
+	//	Description = "Rear brakes",
+	//	Quantity = 2,
+	//	Taxable = true
+	//};
+	//newInvoice.InvoiceLines.Add(newLine);
+	//newInvoice.Dump();
+	//
+	//var savedInvoice = AddOrEditInvoice(newInvoice);
+	//savedInvoice.Dump();
+	
+	//Invoice Editing Example - Add Line
+	//InvoiceView myInvoice = GetInvoice(1166, 8, 7);
+	//InvoiceLineView newLine2 = new InvoiceLineView {
+	//	PartID = 9,
+	//	Quantity = 2,
+	//	Price = 25.00m
+	//};
+	//
+	//myInvoice.InvoiceLines.Add(newLine2);
+	//var editedInvoice = AddOrEditInvoice(myInvoice);
+	//editedInvoice.Dump();
+	
+	//Invoice Editing Example - Edit Line
+	//InvoiceView myInvoice = GetInvoice(1166, 8, 7);
+	//InvoiceLineView myLine = myInvoice.InvoiceLines.Where(x => x.PartID == 9).FirstOrDefault();
+	//myLine.Quantity = 1;
+	//
+	//var editedInvoice = AddOrEditInvoice(myInvoice);
+	//editedInvoice.Dump();
+	
+	//Invoice Editing Example - Removing a Line
+	InvoiceView myInvoice = GetInvoice(1166, 8, 7);
+	InvoiceLineView myLine = myInvoice.InvoiceLines.Where(x => x.PartID == 9).FirstOrDefault();
+	myInvoice.InvoiceLines.Remove(myLine);
+	
+	var editedInvoice = AddOrEditInvoice(myInvoice);
+	editedInvoice.Dump();
 }
 
 // You can define other methods, fields, classes and namespaces here
