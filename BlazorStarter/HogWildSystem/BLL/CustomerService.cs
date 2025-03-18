@@ -49,5 +49,34 @@ namespace HogWildSystem.BLL
                     .OrderBy(x => x.FullName)
                     .ToList();
         }
+
+        public CustomerEditView? GetCustomer(int customerID)
+        {
+            //rule: CustomerID must be valid (> 0)
+            if(customerID == 0)
+            {
+                throw new ArgumentNullException("Please provide a customer ID.");
+            }
+
+            return _context.Customers
+                .Where(x => (x.CustomerID == customerID
+                             && !x.RemoveFromViewFlag))
+                .Select(x => new CustomerEditView
+                {
+                    CustomerID = x.CustomerID,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Address1 = x.Address1,
+                    Address2 = x.Address2,
+                    City = x.City,
+                    ProvStateID = x.ProvStateID,
+                    CountryID = x.CountryID,
+                    PostalCode = x.PostalCode,
+                    Phone = x.Phone,
+                    Email = x.Email,
+                    StatusID = x.StatusID,
+                    RemoveFromViewFlag = x.RemoveFromViewFlag
+                }).FirstOrDefault();
+        }
     }
 }
