@@ -76,6 +76,10 @@ namespace BlazorWebApp.Components.Pages.SamplePages
         {
             NavigationManager.NavigateTo($"/SamplePages/InvoiceEdit/0/{customerID}/7");
         }
+        private void EditCustomer(int customerID)
+        {
+            NavigationManager.NavigateTo($"/SamplePages/CustomerEdit/{customerID}");
+        }
         #endregion
     }
 }

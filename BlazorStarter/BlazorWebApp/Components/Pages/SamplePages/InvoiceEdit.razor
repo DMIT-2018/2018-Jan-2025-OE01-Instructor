@@ -4,6 +4,7 @@
 <PageTitle>Invoice Edit</PageTitle>
 
 <MudText Typo="Typo.h3">@(InvoiceID == 0 ? "New Invoice" : $"Invoice #: {InvoiceID}")</MudText>
+<DMITMessageDisplay ErrorMessage="@errorMessage" ErrorMsgs="errorDetails" Feedback="@feedbackMessage" />
 <MudGrid>
     <MudItem sm="12" md="6">
         <MudPaper Elevation="3" Class="pa-2" Height="135px">

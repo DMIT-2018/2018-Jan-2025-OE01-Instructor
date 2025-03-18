@@ -1,0 +1,29 @@
+﻿@if (hasSingleError || hasMultipleErrors)
+{
+    <MudAlert Elevation="2"
+              Severity="MudBlazor.Severity.Error"
+              Dense="true"
+              Class="mb-2">
+        @if (hasSingleError)
+        {
+            <MudText Typo="Typo.h6">@ErrorMessage</MudText>
+        }
+        @if (hasMultipleErrors)
+        {
+            <MudText Typo="Typo.h6">Please correct the following issues:</MudText>
+            @foreach (var error in ErrorMsgs)
+            {
+                <MudText Typo="Typo.body2">@error</MudText>
+            }
+        }
+    </MudAlert>
+}
+@if (hasFeedback)
+{
+    <MudAlert Elevation="2"
+              Severity="MudBlazor.Severity.Success"
+              Dense="true"
+              Class="mb-2">
+        <MudText Typo="Typo.h6">@Feedback</MudText>
+    </MudAlert>
+}

@@ -3,7 +3,7 @@
 <PageTitle>Customers</PageTitle>
 <MudText Typo="Typo.h3">Customers</MudText>
 
-<!-- Insert Error Message Display here -->
+<DMITMessageDisplay ErrorMessage="@errorMessage" ErrorMsgs="errorDetails" Feedback="@feedbackMessage" />
 
 <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
     <MudText Typo="Typo.h6">Customer Search</MudText>
@@ -34,7 +34,8 @@
                 </HeaderTemplate>
                 <CellTemplate>
                     <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary">
+                               Color="Color.Primary"
+                               OnClick="() => EditCustomer(context.Item.CustomerID)">
                         Edit
                     </MudButton>
                     <MudButton Variant="Variant.Filled"
