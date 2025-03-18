@@ -16,6 +16,7 @@ namespace BlazorWebApp.Components.Pages.SamplePages
         private string description = string.Empty;
         private bool noParts;
         private List<PartView> parts = [];
+        private List<PartView> partList = [];
 
         //Errors and Feedback
         private List<string> errorDetails = [];
@@ -40,6 +41,7 @@ namespace BlazorWebApp.Components.Pages.SamplePages
         protected LookupService LookupService { get; set; } = default!;
         [Inject]
         protected NavigationManager NavigationManager { get; set; } = default!;
+        //So we can use a dialogue
         [Inject]
         protected IDialogService DialogService { get; set; } = default!;
         #endregion
@@ -51,6 +53,7 @@ namespace BlazorWebApp.Components.Pages.SamplePages
             {
                 invoice = InvoiceService.GetInvoice(InvoiceID, CustomerID, EmployeeID);
                 partCategories = LookupService.GetLookups("Part Categories");
+                partList = PartService.GetAllParts();
             }
             catch(ArgumentNullException ex)
             {
@@ -174,7 +177,15 @@ namespace BlazorWebApp.Components.Pages.SamplePages
         }
         private async Task DeleteInvoiceLine(InvoiceLineView invoiceLine)
         {
-            bool? results = await DialogService.ShowMessageBox("Confirm Delete", $"Are you sure that you wish to remove {invoiceLine.Description}?", yesText: "Remove", cancelText: "Cancel");
+            //Show a simple dialogue
+            // Must have a title, the dialogue text, yesText: Our text, cancelText: Out text
+            // Yes results in true
+            // Cancel results in Null
+            // No Text results in false
+            // this call must be used async, so any method calling it must be async Task
+                // async Task is the async equvilent of void
+            // We should make the results datatype bool? to ensure it is nullable.
+            bool? results = await DialogService.ShowMessageBox("Confirm Delete", $"Are you sure that you wish to remove {invoiceLine.Description}?", yesText: "Remove", noText: "Nope", cancelText: "Cancel");
 
             if(results == true)
             {

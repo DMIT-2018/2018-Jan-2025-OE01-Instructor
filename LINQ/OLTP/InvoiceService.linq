@@ -321,7 +321,7 @@ public string GetEmployeeFullName(int employeeId)
 public class InvoiceView
 {
 	public int InvoiceID { get; set; }
-	public DateOnly InvoiceDate { get; set; }
+	public DateOnly InvoiceDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 	public int CustomerID { get; set; }
 	public string CustomerName { get; set; } = string.Empty;
 	public int EmployeeID { get; set; }

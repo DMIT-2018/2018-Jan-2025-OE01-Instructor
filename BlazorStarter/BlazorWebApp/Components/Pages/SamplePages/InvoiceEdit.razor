@@ -84,7 +84,11 @@
              EditTrigger="DataGridEditTrigger.OnRowClick"
              ReadOnly="false">
     <Columns>
-        <!-- Ensure template columns are set to editable false when the grid is editable -->
+        <!--
+            When using a template column in a grid with ReadOnly = false (editable)
+            Remember to make TemplateColumns Editable = false
+            If you don't add the Editable = false, the template Cell content will not show up!
+        -->
         <TemplateColumn Editable="false">
             <CellTemplate>
                 <MudButton Variant="Variant.Text"
@@ -105,10 +109,10 @@
                                  Margin="Margin.Dense"
                                  For="@(() => context.Item.Quantity)"
                                  Min="0"
-                                 Max="@(parts.Where(p => p.PartID == context.Item.PartID).Select(p => p.QOH).FirstOrDefault())"
+                                 Max="@(partList.Where(p => p.PartID == context.Item.PartID).Select(p => p.QOH).FirstOrDefault())"
                                  Step="1" />
             </EditTemplate>
-        </PropertyColumn>>
+        </PropertyColumn>
         <PropertyColumn Property="x => x.Price" Title="Price" Format="C2" Editable="true">
             <EditTemplate>
                 <MudNumericField Value="context.Item.Price"
@@ -118,10 +122,15 @@
                                  Margin="Margin.Dense"
                                  For="@(() => context.Item.Price)"
                                  Min="0.00m"
-                                 Step="0.01m" />
+                                 Step="0.50m" />
             </EditTemplate>
         </PropertyColumn>
         <PropertyColumn Property="x => x.ExtentPrice" Title="Ext. Price" Editable="false" />
+        <!-- 
+            When using a template column in a grid with ReadOnly = false (editable)
+            Remember to make TemplateColumns Editable = false
+            If you don't add the Editable = false, the template Cell content will not show up!
+        -->
         <TemplateColumn Editable="false">
             <CellTemplate>
                 <MudIconButton OnClick="() => SyncPrice(context.Item)"

@@ -77,6 +77,27 @@ namespace HogWildSystem.BLL
                 })
                 .FirstOrDefault();
         }
+
+        public List<PartView> GetAllParts()
+        {
+            return _context.Parts
+                    .Where(x => !x.RemoveFromViewFlag)
+                    .Select(x => new PartView
+                    {
+                        PartID = x.PartID,
+                        PartCategoryID = x.PartCategoryID,
+                        CategoryName = x.PartCategory.Name,
+                        Description = x.Description,
+                        Cost = x.Cost,
+                        Price = x.Price,
+                        ROL = x.ROL,
+                        QOH = x.QOH,
+                        Taxable = x.Taxable,
+                        RemoveFromViewFlag = x.RemoveFromViewFlag
+                    })
+                    .OrderBy(x => x.Description)
+                    .ToList();
+        }
         #endregion
     }
 }
