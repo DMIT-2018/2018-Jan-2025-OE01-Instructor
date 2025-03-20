@@ -1,16 +1,20 @@
-﻿@if (hasSingleError || hasMultipleErrors)
+﻿@{
+    //Components that are used in other pages do not need a @page directive 
+}
+
+@if (hasSingleError || hasMultipleErrors)
 {
     <MudAlert Elevation="2"
-              Severity="MudBlazor.Severity.Error"
+              Severity="Severity.Error"
               Dense="true"
               Class="mb-2">
         @if (hasSingleError)
         {
-            <MudText Typo="Typo.h6">@ErrorMessage</MudText>
+            <MudText Typo="Typo.body1">@ErrorMessage</MudText>
         }
         @if (hasMultipleErrors)
         {
-            <MudText Typo="Typo.h6">Please correct the following issues:</MudText>
+            <MudText Typo="Typo.body1">Please correct the following issues:</MudText>
             @foreach (var error in ErrorMsgs)
             {
                 <MudText Typo="Typo.body2">@error</MudText>
@@ -24,6 +28,6 @@
               Severity="MudBlazor.Severity.Success"
               Dense="true"
               Class="mb-2">
-        <MudText Typo="Typo.h6">@Feedback</MudText>
+        <MudText Typo="Typo.body1">@Feedback</MudText>
     </MudAlert>
 }

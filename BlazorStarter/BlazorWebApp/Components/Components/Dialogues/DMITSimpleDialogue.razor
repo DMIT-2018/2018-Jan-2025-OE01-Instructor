@@ -1,0 +1,19 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudTextField Label="Enter a message"
+                      @bind-Value="feedbackText"
+                      Immediate />
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled"
+                   OnClick="Cancel"
+                   Color="Color.Error">
+            Cancel
+        </MudButton>
+        <MudButton Variant="Variant.Filled"
+                   OnClick="Submit"
+                   Color="@Color">
+            @ButtonText
+        </MudButton>
+    </DialogActions>
+</MudDialog>

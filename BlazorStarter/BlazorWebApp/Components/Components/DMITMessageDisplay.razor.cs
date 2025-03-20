@@ -14,7 +14,14 @@ namespace BlazorWebApp.Components.Components
         #endregion
 
         #region Fields
-         // has feedback
+        // has feedback
+        //private bool hasFeedback()
+        //{
+        //    return !string.IsNullOrWhiteSpace(Feedback);
+        //}
+
+        //Lamda syntax for a simple method, this is the same as the commented out method above.
+        //Can only use this if there is no other logic and you just have a return.
         private bool hasFeedback => !string.IsNullOrWhiteSpace(Feedback);
 
         // has error

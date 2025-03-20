@@ -105,6 +105,11 @@ namespace BlazorWebApp.Components.Pages.SamplePages
             //  NOTE: we will hard code employee ID (1)            
             NavigationManager.NavigateTo($"/SamplePages/InvoiceEdit/0/{CustomerID}/1");
         }
+        private void EditInvoice(int invoiceID)
+        {
+            //  NOTE: we will hard code employee ID (1)            
+            NavigationManager.NavigateTo($"/SamplePages/InvoiceEdit/{invoiceID}/{CustomerID}/1");
+        }
 
         private void Save()
         {

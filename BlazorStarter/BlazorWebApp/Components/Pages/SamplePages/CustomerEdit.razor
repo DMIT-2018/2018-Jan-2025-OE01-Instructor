@@ -10,7 +10,7 @@ else
     <MudText Typo="Typo.h3">Edit Customer: @customer.FirstName @customer.LastName</MudText>
 }
 
-<DMITMessageDisplay ErrorMessage="@errorMessage" ErrorMsgs="errorDetails" Feedback="@feedbackMessage" />
+<DMITMessageDisplay ErrorMessage="@errorMessage" ErrorMsgs="@errorDetails" Feedback="@feedbackMessage" />
 
 <MudForm @ref="customerForm" @bind-IsValid="isFormValid">
     <MudGrid>
@@ -130,3 +130,32 @@ else
         </MudItem>
     </MudGrid>
 </MudForm>
+<MudDataGrid Items="customer.Invoices"
+             Striped
+             FixedFooter
+             FixedHeader
+             Height="30vh">
+    <Columns>
+        <TemplateColumn>
+            <HeaderTemplate>
+                Actions
+            </HeaderTemplate>
+            <CellTemplate>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           OnClick="() => EditInvoice(context.Item.InvoiceID)">
+                    Edit Invoice
+                </MudButton>
+            </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.InvoiceID" Title="Invoice ID" />
+        <PropertyColumn Property="x => x.InvoiceDate" Title="Invoice Date" />
+        <PropertyColumn Property="@(x => x.Total.ToString("C2"))" Title="Total" />
+    </Columns>
+    <NoRecordsContent>
+        <MudText Typo="Typo.h6">No invoices found for the customer.</MudText>
+    </NoRecordsContent>
+    <PagerContent>
+        <MudDataGridPager PageSizeOptions="new int[] { 3, 5, 10, 25}"/>
+    </PagerContent>
+</MudDataGrid>

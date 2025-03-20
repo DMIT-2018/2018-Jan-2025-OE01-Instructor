@@ -44,100 +44,123 @@
         Search Parts     
     </MudButton>
 </MudStack>
-<MudDataGrid Items="parts.Where(p => !invoice.InvoiceLines.Select(x => x.PartID).Contains(p.PartID))"
-             Striped
-             Dense
-             Class="mt-2"
-             FixedFooter
-             FixedHeader
-             Height="23vh">
-    <Columns>
-        <TemplateColumn>
-            <CellTemplate>
-                <MudButton Variant="Variant.Text"
-                           Color="Color.Success"
-                           OnClick="() => AddPart(context.Item)"
-                           StartIcon="@Icons.Material.Filled.Add">
-                    Add
-                </MudButton>
-            </CellTemplate>
-        </TemplateColumn>
-        <PropertyColumn Property="x => x.PartID" Title="Part ID" />
-        <PropertyColumn Property="x => x.Description" Title="Description" />
-        <PropertyColumn Property="@(x => x.Cost.ToString("C2"))" Title="Cost" />
-        <PropertyColumn Property="@(x => x.Price.ToString("C2"))" Title="Price" />
-        <PropertyColumn Property="x => x.ROL" Title="ROL" />
-        <PropertyColumn Property="x => x.QOH" Title="QOH" />
-    </Columns>
-    <NoRecordsContent>
-        <MudText Typo="Typo.h6">@(noParts ? "No parts match your search criteria" : "Please search for parts")</MudText>
-    </NoRecordsContent>
-</MudDataGrid>
-<!-- You must have the EditMode, EditTrigger, and ReadOnly False to make a grid editable -->
-<MudDataGrid Items="invoice.InvoiceLines"
-             Striped
-             Dense
-             Class="mt-2"
-             FixedFooter="true"
-             FixedHeader="true"
-             Height="23vh"
-             EditMode="DataGridEditMode.Cell"
-             EditTrigger="DataGridEditTrigger.OnRowClick"
-             ReadOnly="false">
-    <Columns>
-        <!--
-            When using a template column in a grid with ReadOnly = false (editable)
-            Remember to make TemplateColumns Editable = false
-            If you don't add the Editable = false, the template Cell content will not show up!
-        -->
-        <TemplateColumn Editable="false">
-            <CellTemplate>
-                <MudButton Variant="Variant.Text"
-                           Color="Color.Error"
-                           OnClick="@(() => DeleteInvoiceLine(context.Item))"
-                           StartIcon="@Icons.Material.Filled.Delete">
-                    Remove
-                </MudButton>
-            </CellTemplate>
-        </TemplateColumn>
-        <PropertyColumn Property="x => x.PartID" Title="Part ID" Editable="false" />
-        <PropertyColumn Property="x => x.Description" Title="Description" Editable="false" />
-        <PropertyColumn Property="x => x.Quantity" Title="QTO" Editable="true">
-            <EditTemplate>
-                <MudNumericField Value="context.Item.Quantity"
-                                 ValueChanged="(int newQuantity) => QuantityEdited(context.Item, newQuantity)"
-                                 Immediate="true"
-                                 Margin="Margin.Dense"
-                                 For="@(() => context.Item.Quantity)"
-                                 Min="0"
-                                 Max="@(partList.Where(p => p.PartID == context.Item.PartID).Select(p => p.QOH).FirstOrDefault())"
-                                 Step="1" />
-            </EditTemplate>
-        </PropertyColumn>
-        <PropertyColumn Property="x => x.Price" Title="Price" Format="C2" Editable="true">
-            <EditTemplate>
-                <MudNumericField Value="context.Item.Price"
-                                 ValueChanged="(decimal newPrice) => PriceEdited(context.Item, newPrice)"
-                                 Format="C2"
-                                 Immediate="true"
-                                 Margin="Margin.Dense"
-                                 For="@(() => context.Item.Price)"
-                                 Min="0.00m"
-                                 Step="0.50m" />
-            </EditTemplate>
-        </PropertyColumn>
-        <PropertyColumn Property="x => x.ExtentPrice" Title="Ext. Price" Editable="false" />
-        <!-- 
-            When using a template column in a grid with ReadOnly = false (editable)
-            Remember to make TemplateColumns Editable = false
-            If you don't add the Editable = false, the template Cell content will not show up!
-        -->
-        <TemplateColumn Editable="false">
-            <CellTemplate>
-                <MudIconButton OnClick="() => SyncPrice(context.Item)"
-                               Size="Size.Small"
-                               Icon="@Icons.Material.Filled.Refresh" />
-            </CellTemplate>
-        </TemplateColumn>
-    </Columns>
-</MudDataGrid>
+<MudGrid>
+    <MudItem xs=12>
+        <MudDataGrid Items="parts.Where(p => !invoice.InvoiceLines.Select(x => x.PartID).Contains(p.PartID))"
+                     Striped
+                     Dense
+                     Class="mt-2"
+                     FixedFooter
+                     FixedHeader
+                     Height="23vh">
+            <Columns>
+                <TemplateColumn>
+                    <CellTemplate>
+                        <MudButton Variant="Variant.Text"
+                                   Color="Color.Success"
+                                   OnClick="() => AddPart(context.Item)"
+                                   StartIcon="@Icons.Material.Filled.Add">
+                            Add
+                        </MudButton>
+                    </CellTemplate>
+                </TemplateColumn>
+                <PropertyColumn Property="x => x.PartID" Title="Part ID" />
+                <PropertyColumn Property="x => x.Description" Title="Description" />
+                <PropertyColumn Property="@(x => x.Cost.ToString("C2"))" Title="Cost" />
+                <PropertyColumn Property="@(x => x.Price.ToString("C2"))" Title="Price" />
+                <PropertyColumn Property="x => x.ROL" Title="ROL" />
+                <PropertyColumn Property="x => x.QOH" Title="QOH" />
+            </Columns>
+            <NoRecordsContent>
+                <MudText Typo="Typo.h6">@(noParts ? "No parts match your search criteria" : "Please search for parts")</MudText>
+            </NoRecordsContent>
+        </MudDataGrid>
+    </MudItem>
+    <MudItem xs=12>
+        <!-- You must have the EditMode, EditTrigger, and ReadOnly False to make a grid editable -->
+        <MudDataGrid Items="invoice.InvoiceLines"
+                     Striped
+                     Dense
+                     Class="mt-2"
+                     FixedFooter="true"
+                     FixedHeader="true"
+                     Height="23vh"
+                     EditMode="DataGridEditMode.Cell"
+                     EditTrigger="DataGridEditTrigger.OnRowClick"
+                     ReadOnly="false">
+            <Columns>
+                <!--
+                    When using a template column in a grid with ReadOnly = false (editable)
+                    Remember to make TemplateColumns Editable = false
+                    If you don't add the Editable = false, the template Cell content will not show up!
+                -->
+                <TemplateColumn Editable="false">
+                    <CellTemplate>
+                        <MudButton Variant="Variant.Text"
+                                   Color="Color.Error"
+                                   OnClick="@(() => DeleteInvoiceLine(context.Item))"
+                                   StartIcon="@Icons.Material.Filled.Delete">
+                            Remove
+                        </MudButton>
+                    </CellTemplate>
+                </TemplateColumn>
+                <PropertyColumn Property="x => x.PartID" Title="Part ID" Editable="false" />
+                <PropertyColumn Property="x => x.Description" Title="Description" Editable="false" />
+                <PropertyColumn Property="x => x.Quantity" Title="QTO" Editable="true">
+                    <EditTemplate>
+                        <MudNumericField Value="context.Item.Quantity"
+                                         ValueChanged="(int newQuantity) => QuantityEdited(context.Item, newQuantity)"
+                                         Immediate="true"
+                                         Margin="Margin.Dense"
+                                         For="@(() => context.Item.Quantity)"
+                                         Min="0"
+                                         Max="@(partList.Where(p => p.PartID == context.Item.PartID).Select(p => p.QOH).FirstOrDefault())"
+                                         Step="1" />
+                    </EditTemplate>
+                </PropertyColumn>
+                <PropertyColumn Property="x => x.Price" Title="Price" Format="C2" Editable="true">
+                    <EditTemplate>
+                        <MudNumericField Value="context.Item.Price"
+                                         ValueChanged="(decimal newPrice) => PriceEdited(context.Item, newPrice)"
+                                         Format="C2"
+                                         Immediate="true"
+                                         Margin="Margin.Dense"
+                                         For="@(() => context.Item.Price)"
+                                         Min="0.00m"
+                                         Step="0.50m" />
+                    </EditTemplate>
+                </PropertyColumn>
+                <PropertyColumn Property="x => x.ExtentPrice" Title="Ext. Price" Editable="false" />
+                <!--
+                    When using a template column in a grid with ReadOnly = false (editable)
+                    Remember to make TemplateColumns Editable = false
+                    If you don't add the Editable = false, the template Cell content will not show up!
+                -->
+                <TemplateColumn Editable="false">
+                    <CellTemplate>
+                        <MudIconButton OnClick="() => SyncPrice(context.Item)"
+                                       Size="Size.Small"
+                                       Icon="@Icons.Material.Filled.Refresh" />
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+        </MudDataGrid>
+    </MudItem>
+</MudGrid>
+<MudStack Class="mt-2"
+          Row
+          AlignItems="AlignItems.Center"
+          Justify="Justify.Center">
+    <MudButton Color="Color.Primary"
+               Variant="Variant.Filled"
+               OnClick="SaveInvoice">
+        Save Invoice
+    </MudButton>
+    <MudButton Color="Color.Error"
+               Variant="Variant.Filled"
+               OnClick="Close">
+        Close/Cancel
+    </MudButton>
+</MudStack>
+
+

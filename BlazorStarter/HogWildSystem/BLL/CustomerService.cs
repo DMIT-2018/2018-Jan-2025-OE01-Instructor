@@ -76,7 +76,17 @@ namespace HogWildSystem.BLL
                     Phone = x.Phone,
                     Email = x.Email,
                     StatusID = x.StatusID,
-                    RemoveFromViewFlag = x.RemoveFromViewFlag
+                    RemoveFromViewFlag = x.RemoveFromViewFlag,
+                    Invoices = x.Invoices
+                                .Where(i => !i.RemoveFromViewFlag)
+                                .Select(i => new InvoiceCustomerView
+                                {
+                                    InvoiceID = i.InvoiceID,
+                                    InvoiceDate = i.InvoiceDate,
+                                    Total = i.SubTotal + i.Tax
+                                })
+                                .OrderByDescending(i => i.InvoiceDate)
+                                .ToList()
                 }).FirstOrDefault();
         }
 

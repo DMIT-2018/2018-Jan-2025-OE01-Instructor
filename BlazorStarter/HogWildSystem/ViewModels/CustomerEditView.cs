@@ -22,6 +22,7 @@ namespace HogWildSystem.ViewModels
         public string Phone { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public int? StatusID { get; set; }
+        public List<InvoiceCustomerView> Invoices { get; set; } = [];
         public bool RemoveFromViewFlag { get; set; }
     }
 }

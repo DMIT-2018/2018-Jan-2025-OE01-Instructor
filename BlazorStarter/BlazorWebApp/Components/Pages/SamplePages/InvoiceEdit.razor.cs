@@ -76,7 +76,6 @@ namespace BlazorWebApp.Components.Pages.SamplePages
                 errorMessage = BlazorHelperClass.GetInnerException(ex).Message;
             }
         }
-
         private void SearchParts()
         {
             try
@@ -137,7 +136,6 @@ namespace BlazorWebApp.Components.Pages.SamplePages
                 errorMessage = BlazorHelperClass.GetInnerException(ex).Message;
             }
         }
-
         private void AddPart(PartView part)
         {
             try
@@ -193,7 +191,6 @@ namespace BlazorWebApp.Components.Pages.SamplePages
                 UpdateSubtotalAndTax();
             }
         }
-
         private void SyncPrice(InvoiceLineView line)
         {
             //Find the original price of the Part from the database
@@ -239,7 +236,6 @@ namespace BlazorWebApp.Components.Pages.SamplePages
             lineView.Price = newPrice;
             UpdateSubtotalAndTax();
         }
-
         private void UpdateSubtotalAndTax()
         {
             invoice.SubTotal = invoice.InvoiceLines
@@ -248,6 +244,52 @@ namespace BlazorWebApp.Components.Pages.SamplePages
             invoice.Tax = invoice.InvoiceLines
                 .Where(x => !x.RemoveFromViewFlag)
                 .Sum(x => x.Taxable ? x.Quantity * x.Price * 0.05m : 0);
+        }
+        private void SaveInvoice()
+        {
+            try
+            {
+                
+                //reset errors and feedback
+                errorDetails.Clear();
+                errorMessage = string.Empty;
+                feedbackMessage = string.Empty;
+
+                //check if new invoice
+                bool isNewInvoice = invoice.InvoiceID == 0;
+                invoice = InvoiceService.AddOrEditInvoice(invoice);
+                InvoiceID = invoice.InvoiceID;
+                feedbackMessage = isNewInvoice
+                    ? $"New Invoice No {InvoiceID} was created."
+                    : $"Invoice No {InvoiceID} was updated.";
+            }
+            catch(ArgumentNullException ex)
+            {
+                errorMessage = BlazorHelperClass.GetInnerException(ex).Message;
+            }
+            catch(AggregateException ex)
+            {
+                if(!string.IsNullOrWhiteSpace(errorMessage))
+                {
+                    errorMessage = $"{errorMessage}{Environment.NewLine}";
+                }
+                //Debug here
+                foreach (var error in ex.InnerExceptions)
+                {
+                    errorDetails.Add(error.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMessage = BlazorHelperClass.GetInnerException(ex).Message;
+            }
+        }
+        private async Task Close()
+        {
+            bool? result = await DialogService.ShowMessageBox("Confirm Close", "Are you sure you want to close the invoice editor? All unsaved changes will be lost.", yesText: "Yes", cancelText: "Cancel");
+
+            if (result == true)
+                NavigationManager.NavigateTo($"/SamplePages/CustomerEdit/{CustomerID}");
         }
         #endregion
     }
