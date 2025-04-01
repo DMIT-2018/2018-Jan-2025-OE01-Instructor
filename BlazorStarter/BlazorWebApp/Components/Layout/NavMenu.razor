@@ -5,13 +5,45 @@
 <MudNavMenu>
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
     <MudNavLink Href="counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Counter</MudNavLink>
-    <MudNavLink Href="weather" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Weather</MudNavLink>
-    <MudNavGroup Title="Sample Pages">
-        <MudNavLink Href="SamplePages/Basics" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Abc">Basics</MudNavLink>
-        <MudNavLink Href="SamplePages/WorkingVersion" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AcUnit">Working Version</MudNavLink>
-        <MudNavLink Href="SamplePages/Customers" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.CrueltyFree">Customers</MudNavLink>
-        <MudNavLink Href="SamplePages/Dialogues" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.FormatAlignJustify">Dialogues</MudNavLink>
-    </MudNavGroup>
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <MudNavLink Href="weather" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Weather</MudNavLink>
+        </Authorized>
+        <NotAuthorized>
+            <MudText>No Weather for you!</MudText>
+        </NotAuthorized>
+    </AuthorizeView>
+    <AuthorizeView Roles="Manager, Peeps">
+        <Authorized>
+           <MudText>You are not an admin!</MudText>
+        </Authorized>
+    </AuthorizeView>
+    <!-- To hide elements from Unauthorized users ensure they are wrapped in an AuthorizeView -->
+    <AuthorizeView>
+        <Authorized>
+            <MudNavGroup Title="Sample Pages">
+                <MudNavLink Href="SamplePages/Basics" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Abc">Basics</MudNavLink>
+                <!-- 
+                    Can only nest AuthorizeView by add Context="innerContext" to the nested AuthorizeView 
+                    Note: The innerContext can be named anything you want
+                    You can nest as many AuthorizeView as you want as long as they
+                    have different Context names
+                -->
+                <AuthorizeView Roles="Admin" Context="innerContext">
+                    <Authorized>
+                        <MudNavLink Href="SamplePages/WorkingVersion" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AcUnit">Working Version</MudNavLink>
+                    </Authorized>
+                </AuthorizeView>
+                <AuthorizeView Roles="Manager" Context="innerContext">
+                    <Authorized>
+                        <MudNavLink Href="SamplePages/Customers" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.CrueltyFree">Customers</MudNavLink>
+                    </Authorized>
+                </AuthorizeView>
+                <MudNavLink Href="SamplePages/Dialogues" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.FormatAlignJustify">Dialogues</MudNavLink>
+            </MudNavGroup>
+        </Authorized>
+    </AuthorizeView>
+    
     <MudNavLink Href="auth" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Lock">Auth Required</MudNavLink>
     <AuthorizeView>
         <Authorized>

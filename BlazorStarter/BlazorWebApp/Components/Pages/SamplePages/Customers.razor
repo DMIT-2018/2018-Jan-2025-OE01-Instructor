@@ -1,4 +1,14 @@
 ﻿@page "/SamplePages/Customers"
+@using Microsoft.AspNetCore.Authorization
+
+<!-- 
+    Users can only access this page when they login 
+    You must have the using Microsoft.AspNetCore.Authorization
+
+    You can add Roles = "roles you want to have access, comma separated"
+    to restrict access to only users with those roles
+-->
+@attribute [Authorize(Roles = "Manager")]
 
 <PageTitle>Customers</PageTitle>
 <MudText Typo="Typo.h3">Customers</MudText>
