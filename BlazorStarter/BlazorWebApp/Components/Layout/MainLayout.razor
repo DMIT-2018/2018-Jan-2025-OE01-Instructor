@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider IsDarkMode="_isDarkMode" Theme="DMITTheme" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -9,7 +9,9 @@
         <MudStaticNavDrawerToggle DrawerId="nav-drawer" Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" />
         <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+        <MudIconButton Icon="@(_isDarkMode ? @DMITIcons.lightMode: DMITIcons.darkMode)"
+                       Color="Color.Warning"
+                       OnClick="ToggleDarkMode"/>
     </MudAppBar>
     <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu />
@@ -28,6 +30,41 @@
 
 @code {
     private bool _drawerOpen = true;
+    private bool _isDarkMode = true;
+
+    private void ToggleDarkMode()
+    {
+        _isDarkMode = !_isDarkMode;
+        StateHasChanged();
+    }
+
+    MudTheme DMITTheme = new() 
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#6290C3",
+            Secondary = "#C2E7DA",
+            AppbarBackground = "#1A1B41",
+            Tertiary = "#BAFF29",
+            Background = "#F1FFE7",
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#8F3985",
+            Secondary = "#07BEB8",
+            AppbarBackground = "#25283D",
+            Tertiary = "#98DFEA",
+            Background = "#25283D",
+        
+        },
+        Typography = new Typography()
+        {
+            Default = new DefaultTypography()
+            {
+                FontFamily = new[] { "Comic Neue", "Helvetica", "Arial", "sans-serif" }
+            }
+        }
+    };
 }
 
 
