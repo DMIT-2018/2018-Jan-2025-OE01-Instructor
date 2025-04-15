@@ -5,7 +5,7 @@ namespace BlazorWebApp.Components.Pages.SamplePages
 {
     public partial class MudStepperEx
     {
-        private string firstName = string.Empty;
+        private string firstName = "Bob";
         private string lastName = string.Empty;
         private string email = string.Empty;
         private string phoneNumber = string.Empty;
